@@ -24,8 +24,8 @@ EOF
 print_success "Memperbarui daftar paket..."
 sudo apt update
 
-print_success "Menginstal ISC DHCP Server dan IPTables..."
-sudo apt install -y isc-dhcp-server iptables
+print_success "Menginstal ISC DHCP Server, IPTables, dan iptables-persistent..."
+sudo apt install -y isc-dhcp-server iptables iptables-persistent
 
 print_success "Mengonfigurasi DHCP server..."
 cat <<EOF | sudo tee /etc/dhcp/dhcpd.conf
@@ -53,7 +53,12 @@ network:
 EOF
 
 print_success "Menerapkan konfigurasi netplan..."
-sudo netplan apply
+sudo netplan apply"
+
+
+# Restart DHCP server menggunakan /etc/init.d
+print_success "Merestart DHCP server menggunakan /etc/init.d/isc-dhcp-server..."
+sudo /etc/init.d/isc-dhcp-server restart 
 
 print_success "Mengaktifkan IP forwarding dan mengonfigurasi IPTables..."
 sudo sysctl -w net.ipv4.ip_forward=1
@@ -61,14 +66,7 @@ echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
 sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
 
 print_success "Menyimpan aturan IPTables..."
-sudo iptables-save | sudo tee /etc/iptables/rules.v4
+sudo netfilter-persistent save
 
-print_success "Memulai dan mengaktifkan DHCP server..."
-sudo systemctl restart isc-dhcp-server
-sudo systemctl enable isc-dhcp-server
-
-# Restart DHCP server menggunakan /etc/init.d
-print_success "Merestart DHCP server menggunakan /etc/init.d/isc-dhcp-server..."
-sudo /etc/init.d/isc-dhcp-server restart
 
 print_success "Setup selesai!"
