@@ -44,6 +44,8 @@ cat <<EOF | sudo tee /etc/netplan/50-cloud-init.yaml
 network:
   version: 2
   ethernets:
+    enp0s3:
+      dhcp4: true
     enp0s8:
       addresses:
         - 192.168.9.1/24
