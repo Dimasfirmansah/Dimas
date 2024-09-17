@@ -1,8 +1,19 @@
 #!/bin/bash
 
-# Mengatur repository lokal Kartolo
-echo "Menambahkan repository lokal Kartolo..."
-sudo tee /etc/apt/sources.list <<EOF
+set -e
+
+# Fungsi untuk menampilkan pesan dengan warna hijau
+print_success() {
+    echo -e "\e[32m$1\e[0m"
+}
+
+# Fungsi untuk menampilkan pesan dengan warna merah
+print_error() {
+    echo -e "\e[31m$1\e[0m"
+}
+
+print_success "Menambahkan repository lokal Kartolo..."
+cat <<EOF | sudo tee /etc/apt/sources.list
 deb http://kartolo.sby.datautama.net.id/ubuntu/ focal main restricted universe multiverse
 deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-updates main restricted universe multiverse
 deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-security main restricted universe multiverse
@@ -10,17 +21,14 @@ deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-backports main restricted 
 deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-proposed main restricted universe multiverse
 EOF
 
-# Update paket
-echo "Memperbarui paket..."
+print_success "Memperbarui daftar paket..."
 sudo apt update
 
-# Instal paket yang diperlukan
-echo "Menginstal ISC DHCP Server dan IPTables..."
+print_success "Menginstal ISC DHCP Server dan IPTables..."
 sudo apt install -y isc-dhcp-server iptables
 
-# Konfigurasi DHCP server
-echo "Mengonfigurasi DHCP server..."
-sudo tee /etc/dhcp/dhcpd.conf <<EOF
+print_success "Mengonfigurasi DHCP server..."
+cat <<EOF | sudo tee /etc/dhcp/dhcpd.conf
 subnet 192.168.9.0 netmask 255.255.255.0 {
     range 192.168.9.10 192.168.9.100;
     option routers 192.168.9.1;
@@ -28,13 +36,11 @@ subnet 192.168.9.0 netmask 255.255.255.0 {
 }
 EOF
 
-# Mengonfigurasi interface DHCP server
-echo "Mengonfigurasi interface DHCP server..."
+print_success "Mengonfigurasi interface DHCP server..."
 sudo sed -i 's/^INTERFACESv4=.*/INTERFACESv4="enp0s8"/' /etc/default/isc-dhcp-server
 
-# Mengatur IP statis untuk internal network
-echo "Mengonfigurasi IP statis untuk internal network..."
-sudo tee /etc/netplan/01-netcfg.yaml <<EOF
+print_success "Mengonfigurasi IP statis untuk internal network..."
+cat <<EOF | sudo tee /etc/netplan/01-netcfg.yaml
 network:
   version: 2
   ethernets:
@@ -44,24 +50,21 @@ network:
       dhcp4: no
 EOF
 
-# Terapkan konfigurasi netplan
-echo "Menerapkan konfigurasi netplan..."
+print_success "Menerapkan konfigurasi netplan..."
 sudo netplan apply
 
-# Mengaktifkan IP forwarding dan menambahkan aturan IPTables
-echo "Mengonfigurasi IP forwarding dan IPTables..."
+print_success "Mengaktifkan IP forwarding dan mengonfigurasi IPTables..."
 sudo sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
 sudo iptables -t nat -A POSTROUTING -o enp0s0 -j MASQUERADE
 sudo iptables -A FORWARD -i enp0s8 -o enp0s0 -j ACCEPT
 sudo iptables -A FORWARD -i enp0s0 -o enp0s8 -m state --state RELATED,ESTABLISHED -j ACCEPT
 
-# Simpan aturan IPTables
+print_success "Menyimpan aturan IPTables..."
 sudo iptables-save | sudo tee /etc/iptables/rules.v4
 
-# Mulai dan aktifkan DHCP server
-echo "Memulai dan mengaktifkan DHCP server..."
+print_success "Memulai dan mengaktifkan DHCP server..."
 sudo systemctl restart isc-dhcp-server
 sudo systemctl enable isc-dhcp-server
 
-echo "Setup selesai!"
+print_success "Setup selesai!"
