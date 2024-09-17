@@ -4,14 +4,28 @@ set -e
 
 # Fungsi untuk menampilkan pesan dengan warna hijau
 print_success() {
-    echo -e "\e[32m$1\e[0m"
+    dialog --title "Success" --msgbox "$1" 6 50
 }
 
 # Fungsi untuk menampilkan pesan dengan warna merah
 print_error() {
-    echo -e "\e[31m$1\e[0m"
+    dialog --title "Error" --msgbox "$1" 6 50
 }
 
+# Fungsi untuk menampilkan pesan dengan warna kuning
+print_warning() {
+    dialog --title "Warning" --msgbox "$1" 6 50
+}
+
+# Fungsi untuk konfirmasi pengguna
+confirm_action() {
+    dialog --title "Confirm" --yesno "$1" 6 50
+}
+
+# Memperkenalkan diri
+dialog --title "Script by Dimas" --msgbox "Selamat datang! Script ini dirancang oleh Dimas.\n\nTekan OK untuk melanjutkan." 6 50
+
+# Menambahkan repository lokal Kartolo
 print_success "Menambahkan repository lokal Kartolo..."
 cat <<EOF | sudo tee /etc/apt/sources.list
 deb http://kartolo.sby.datautama.net.id/ubuntu/ focal main restricted universe multiverse
@@ -55,11 +69,11 @@ EOF
 print_success "Menerapkan konfigurasi netplan..."
 sudo netplan apply
 
-
-# Restart DHCP server menggunakan /etc/init.d
+# Restart DHCP server
 print_success "Merestart DHCP server menggunakan /etc/init.d/isc-dhcp-server..."
 sudo /etc/init.d/isc-dhcp-server restart 
 
+# Mengaktifkan IP forwarding dan mengonfigurasi IPTables
 print_success "Mengaktifkan IP forwarding dan mengonfigurasi IPTables..."
 sudo sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
@@ -68,5 +82,4 @@ sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
 print_success "Menyimpan aturan IPTables..."
 sudo netfilter-persistent save
 
-
-print_success "Setup selesai!"
+print_success "Setup selesai! Terima kasih telah menggunakan script ini. Script ini dibuat dengan hati oleh Dimas."
