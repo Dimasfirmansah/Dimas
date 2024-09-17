@@ -53,7 +53,7 @@ network:
 EOF
 
 print_success "Menerapkan konfigurasi netplan..."
-sudo netplan apply"
+sudo netplan apply
 
 
 # Restart DHCP server menggunakan /etc/init.d
