@@ -45,7 +45,7 @@ network:
   version: 2
   ethernets:
     enp0s3:
-      dhcp4: true
+     dhcp4: true
     enp0s8:
       addresses:
         - 192.168.9.1/24
@@ -58,9 +58,7 @@ sudo netplan apply
 print_success "Mengaktifkan IP forwarding dan mengonfigurasi IPTables..."
 sudo sysctl -w net.ipv4.ip_forward=1
 echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
-sudo iptables -t nat -A POSTROUTING -o enp0s0 -j MASQUERADE
-sudo iptables -A FORWARD -i enp0s8 -o enp0s0 -j ACCEPT
-sudo iptables -A FORWARD -i enp0s0 -o enp0s8 -m state --state RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
 
 print_success "Menyimpan aturan IPTables..."
 sudo iptables-save | sudo tee /etc/iptables/rules.v4
@@ -68,5 +66,9 @@ sudo iptables-save | sudo tee /etc/iptables/rules.v4
 print_success "Memulai dan mengaktifkan DHCP server..."
 sudo systemctl restart isc-dhcp-server
 sudo systemctl enable isc-dhcp-server
+
+# Restart DHCP server menggunakan /etc/init.d
+print_success "Merestart DHCP server menggunakan /etc/init.d/isc-dhcp-server..."
+sudo /etc/init.d/isc-dhcp-server restart
 
 print_success "Setup selesai!"
