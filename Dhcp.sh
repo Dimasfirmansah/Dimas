@@ -40,7 +40,7 @@ print_success "Mengonfigurasi interface DHCP server..."
 sudo sed -i 's/^INTERFACESv4=.*/INTERFACESv4="enp0s8"/' /etc/default/isc-dhcp-server
 
 print_success "Mengonfigurasi IP statis untuk internal network..."
-cat <<EOF | sudo tee /etc/netplan/01-netcfg.yaml
+cat <<EOF | sudo tee /etc/netplan/50-cloud-init.yaml
 network:
   version: 2
   ethernets:
