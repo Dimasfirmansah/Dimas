@@ -4,11 +4,11 @@
 echo "Configuring local repository to Kartolo..."
 
 cat <<EOT > /etc/apt/sources.list
-deb http://kartolo.sby.datautama.net.id/ubuntu/ focal main restricted universe multiverse
-deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-updates main restricted universe multiverse
-deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-security main restricted universe multiverse
-deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-backports main restricted universe multiverse
-deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-proposed main restricted universe multiverse
+deb http://kebo.pens.ac.id/ubuntu/ focal main restricted universe multiverse
+deb http://kebo.pens.ac.id/ubuntu/ focal-updates main restricted universe multiverse
+deb http://kebo.pens.ac.id/ubuntu/ focal-security main restricted universe multiverse
+deb http://kebo.pens.ac.id/ubuntu/ focal-backports main restricted universe multiverse
+deb http://kebo.pens.ac.id/ubuntu/ focal-proposed main restricted universe multiverse
 EOT
 
 # Update repository
