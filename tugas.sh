@@ -39,7 +39,7 @@ EOT
 netplan apply
 
 # Install DHCP server if not installed
-apt install isc-dhcp-server
+sudo apt install -y isc-dhcp-server
 
 # Configure DHCP server
 cat <<EOT > /etc/dhcp/dhcpd.conf
