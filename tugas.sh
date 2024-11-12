@@ -3,17 +3,6 @@
 # Configure local repository to Kartolo for Ubuntu 20.04
 echo "Configuring local repository to Kartolo..."
 
-cat <<EOT > /etc/apt/sources.list
-deb http://kebo.pens.ac.id/ubuntu/ focal main restricted universe multiverse
-deb http://kebo.pens.ac.id/ubuntu/ focal-updates main restricted universe multiverse
-deb http://kebo.pens.ac.id/ubuntu/ focal-security main restricted universe multiverse
-deb http://kebo.pens.ac.id/ubuntu/ focal-backports main restricted universe multiverse
-deb http://kebo.pens.ac.id/ubuntu/ focal-proposed main restricted universe multiverse
-EOT
-
-# Update repository
-apt update
-
 # Setting up VLAN on eth1 using Netplan
 echo "Configuring VLAN 10 on eth1 using Netplan..."
 
@@ -21,6 +10,8 @@ cat <<EOT > /etc/netplan/01-netcfg.yaml
 network:
   version: 2
   ethernets:
+    eth0:
+      dhcp4: yes
     eth1:
       dhcp4: no
   vlans:
@@ -31,15 +22,24 @@ network:
         - 192.168.9.1/24
 EOT
 
-# Apply Netplan configuration
-netplan apply
-echo "VLAN 10 configured on eth1 using Netplan."
+cat <<EOT > /etc/apt/sources.list
+deb http://kartolo.sby.datautama.net.id/ubuntu/ focal main restricted universe multiverse
+deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-updates main restricted universe multiverse
+deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-security main restricted universe multiverse
+deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-backports main restricted universe multiverse
+deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-proposed main restricted universe multiverse
+EOT
+
+# Update repository
+apt update
+
+# Setting up VLAN and DHCP server on Ubuntu
+echo "Configuring VLAN 10 on eth1 and setting up DHCP server..."
 
 # Install DHCP server if not installed
-echo "Installing and configuring DHCP server..."
 apt install -y isc-dhcp-server
 
-# Configure DHCP server for VLAN 10
+# Configure DHCP server
 cat <<EOT > /etc/dhcp/dhcpd.conf
 subnet 192.168.9.0 netmask 255.255.255.0 {
     range 192.168.9.10 192.168.9.100;
@@ -48,24 +48,24 @@ subnet 192.168.9.0 netmask 255.255.255.0 {
 }
 EOT
 
-# Specify the DHCP interface for VLAN 10
+# Specify the DHCP interface
 echo 'INTERFACESv4="eth1.10"' > /etc/default/isc-dhcp-server
 
 # Restart DHCP server
 systemctl restart isc-dhcp-server
-echo "DHCP server configured successfully on VLAN 10."
+echo "DHCP server configured successfully."
 
-# Enable IP forwarding for internet access
+# Enable IP forwarding
 echo "Enabling IP forwarding..."
 echo 1 > /proc/sys/net/ipv4/ip_forward
 
-# Configure iptables for NAT to allow internet access for clients in VLAN 10
+# Configure iptables for internet sharing
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 echo "iptables configured for NAT."
 
 # Configure route to MikroTik network
 echo "Adding route to MikroTik network..."
-ip route add 192.168.200.0/24 via 192.168.9.10  # Replace with MikroTik's IP on VLAN 10
+ip route add 192.168.200.0/24 via 192.168.9.10  # Replace X with MikroTik's VLAN 10 IP
 
 # Remote Configuration for Cisco
 echo "Configuring Cisco device..."
@@ -91,7 +91,7 @@ echo "Cisco configuration completed."
 echo "Configuring MikroTik device..."
 MIKROTIK_USER="admin"
 MIKROTIK_PASS=""
-MIKROTIK_IP="192.168.9.10"  # Replace with MikroTik's IP on VLAN 10
+MIKROTIK_IP="192.168.9.10"  # Replace Y with MikroTik's VLAN 10 IP
 
 sshpass -p "$MIKROTIK_PASS" ssh -o StrictHostKeyChecking=no $MIKROTIK_USER@$MIKROTIK_IP << EOF
 /ip dhcp-client add interface=ether1 disabled=no
@@ -104,3 +104,4 @@ EOF
 echo "MikroTik configuration completed."
 
 echo "Automation complete."
+saat creating vlan interface tolong settingkan di netplan
