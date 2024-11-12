@@ -22,6 +22,8 @@ network:
         - 192.168.9.1/24
 EOT
 
+netplan apply
+
 cat <<EOT > /etc/apt/sources.list
 deb http://kartolo.sby.datautama.net.id/ubuntu/ focal main restricted universe multiverse
 deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-updates main restricted universe multiverse
@@ -90,7 +92,7 @@ echo "Cisco configuration completed."
 # Remote Configuration for MikroTik
 echo "Configuring MikroTik device..."
 MIKROTIK_USER="admin"
-MIKROTIK_PASS=""
+MIKROTIK_PASS="123"
 MIKROTIK_IP="192.168.9.10"  # Replace Y with MikroTik's VLAN 10 IP
 
 sshpass -p "$MIKROTIK_PASS" ssh -o StrictHostKeyChecking=no $MIKROTIK_USER@$MIKROTIK_IP << EOF
@@ -99,7 +101,7 @@ sshpass -p "$MIKROTIK_PASS" ssh -o StrictHostKeyChecking=no $MIKROTIK_USER@$MIKR
 /ip dhcp-server add name=dhcp1 interface=ether2 address-pool=dhcp_pool disabled=no
 /ip pool add name=dhcp_pool ranges=192.168.200.10-192.168.200.100
 /ip dhcp-server network add address=192.168.200.0/24 gateway=192.168.200.1
-/ip route add dst-address=0.0.0.0/0 gateway=192.168.9.1
+/ip route add gateway=192.168.9.1
 EOF
 echo "MikroTik configuration completed."
 
