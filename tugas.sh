@@ -71,17 +71,17 @@ ip route add 192.168.200.0/24 via 192.168.9.10  # Replace X with MikroTik's VLAN
 
 # Remote Configuration for Cisco
 echo "Configuring Cisco device..."
-CISCO_USER=""
-CISCO_PASS=""
+CISCO_USER="admin"
+CISCO_PASS="123"
 CISCO_IP="192.168.9.11"  # Replace with the IP address of the Cisco device in VLAN 10
 
 sshpass -p "$CISCO_PASS" ssh -o StrictHostKeyChecking=no $CISCO_USER@$CISCO_IP << EOF
 enable
 configure terminal
-interface fastEthernet 0/0
+interface ethernet 0/0
 switchport mode trunk
 exit
-interface fastEthernet 0/1
+interface ethernet 0/1
 switchport mode access
 switchport access vlan 10
 exit
