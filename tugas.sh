@@ -3,9 +3,22 @@
 # Configure local repository to Kartolo for Ubuntu 20.04
 echo "Configuring local repository to Kartolo..."
 
-# Setting up VLAN on eth1 using Netplan
+# Menyetel repository ke Kartolo
+cat <<EOT > /etc/apt/sources.list
+deb http://kartolo.sby.datautama.net.id/ubuntu/ focal main restricted universe multiverse
+deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-updates main restricted universe multiverse
+deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-security main restricted universe multiverse
+deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-backports main restricted universe multiverse
+deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-proposed main restricted universe multiverse
+EOT
+
+# Update repository
+apt update
+
+# Setting up VLAN 10 on eth1 using Netplan
 echo "Configuring VLAN 10 on eth1 using Netplan..."
 
+# Konfigurasi Netplan untuk VLAN
 cat <<EOT > /etc/netplan/01-netcfg.yaml
 network:
   version: 2
@@ -22,21 +35,8 @@ network:
         - 192.168.9.1/24
 EOT
 
+# Apply Netplan configuration
 netplan apply
-
-cat <<EOT > /etc/apt/sources.list
-deb http://kartolo.sby.datautama.net.id/ubuntu/ focal main restricted universe multiverse
-deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-updates main restricted universe multiverse
-deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-security main restricted universe multiverse
-deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-backports main restricted universe multiverse
-deb http://kartolo.sby.datautama.net.id/ubuntu/ focal-proposed main restricted universe multiverse
-EOT
-
-# Update repository
-apt update
-
-# Setting up VLAN and DHCP server on Ubuntu
-echo "Configuring VLAN 10 on eth1 and setting up DHCP server..."
 
 # Install DHCP server if not installed
 apt install -y isc-dhcp-server
@@ -67,13 +67,13 @@ echo "iptables configured for NAT."
 
 # Configure route to MikroTik network
 echo "Adding route to MikroTik network..."
-ip route add 192.168.200.0/24 via 192.168.9.10  # Replace X with MikroTik's VLAN 10 IP
+ip route add 192.168.200.0/24 via 192.168.9.10  # Replace 192.168.9.10 with MikroTik's IP in VLAN 10
 
 # Remote Configuration for Cisco
 echo "Configuring Cisco device..."
 CISCO_USER="admin"
 CISCO_PASS="123"
-CISCO_IP="192.168.9.11"  # Replace with the IP address of the Cisco device in VLAN 10
+CISCO_IP="192.168.9.11"  # IP address of Cisco device in VLAN 10
 
 sshpass -p "$CISCO_PASS" ssh -o StrictHostKeyChecking=no $CISCO_USER@$CISCO_IP << EOF
 enable
@@ -93,7 +93,7 @@ echo "Cisco configuration completed."
 echo "Configuring MikroTik device..."
 MIKROTIK_USER="admin"
 MIKROTIK_PASS="123"
-MIKROTIK_IP="192.168.9.10"  # Replace Y with MikroTik's VLAN 10 IP
+MIKROTIK_IP="192.168.9.10"  # Replace with MikroTik's IP in VLAN 10
 
 sshpass -p "$MIKROTIK_PASS" ssh -o StrictHostKeyChecking=no $MIKROTIK_USER@$MIKROTIK_IP << EOF
 /ip dhcp-client add interface=ether1 disabled=no
@@ -106,4 +106,3 @@ EOF
 echo "MikroTik configuration completed."
 
 echo "Automation complete."
-saat creating vlan interface tolong settingkan di netplan
