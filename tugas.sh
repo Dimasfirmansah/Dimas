@@ -71,7 +71,7 @@ ip route add 192.168.200.0/24 via 192.168.9.10  # Replace with MikroTik's IP on 
 echo "Configuring Cisco device..."
 CISCO_USER=""
 CISCO_PASS=""
-CISCO_IP="192.168.9.11"  # Replace with the IP address of the Cisco device in VLAN 10
+CISCO_IP="192.168.9.10"  # Replace with the IP address of the Cisco device in VLAN 10
 
 sshpass -p "$CISCO_PASS" ssh -o StrictHostKeyChecking=no $CISCO_USER@$CISCO_IP << EOF
 enable
@@ -90,8 +90,8 @@ echo "Cisco configuration completed."
 # Remote Configuration for MikroTik
 echo "Configuring MikroTik device..."
 MIKROTIK_USER="admin"
-MIKROTIK_PASS=""
-MIKROTIK_IP="192.168.9.10"  # Replace with MikroTik's IP on VLAN 10
+MIKROTIK_PASS="123"
+MIKROTIK_IP="192.168.9.11"  # Replace with MikroTik's IP on VLAN 10
 
 sshpass -p "$MIKROTIK_PASS" ssh -o StrictHostKeyChecking=no $MIKROTIK_USER@$MIKROTIK_IP << EOF
 /ip dhcp-client add interface=ether1 disabled=no
