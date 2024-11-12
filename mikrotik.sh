@@ -3,7 +3,7 @@
 # Set variables
 MIKROTIK_USER="admin"
 MIKROTIK_PASS="123"
-MIKROTIK_IP="192.168.200.1"
+MIKROTIK_IP="192.168.9.10"
 
 # Telnet login and configuration
 echo "$MIKROTIK_PASS" | telnet $MIKROTIK_IP << EOF
