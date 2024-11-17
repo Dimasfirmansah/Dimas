@@ -1,4 +1,4 @@
-#!/usr/bin/expect -f
+#!/bin/sh
 
 set MIKROTIK_USER "admin"
 set MIKROTIK_PASS "123"
