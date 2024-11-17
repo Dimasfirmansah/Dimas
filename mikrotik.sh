@@ -2,7 +2,7 @@
 
 set MIKROTIK_USER "admin"
 set MIKROTIK_PASS "123"
-set MIKROTIK_IP "192.168.9.10"
+set MIKROTIK_IP "192.168.9.11"
 
 spawn telnet $MIKROTIK_IP
 expect "login:"
