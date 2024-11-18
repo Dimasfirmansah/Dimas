@@ -20,7 +20,7 @@ send "/interface dhcp-client add interface=ether1 disabled=no\r"
 expect ">"
 
 # Menambahkan IP address di ether2
-send "/interface address add address=192.168.200.1/24 interface=ether2\r"
+send "/ip address add address=192.168.200.1/24 interface=ether2\r"
 expect ">"
 
 # Membuat IP pool
@@ -33,6 +33,9 @@ expect ">"
 
 # Menambahkan konfigurasi network DHCP Server
 send "/ip dhcp-server network add address=192.168.200.0/24 gateway=192.168.200.1\r"
+expect ">"
+# Menambahkan konfigurasi network DHCP Server
+send "/ip dhcp-server enable dhcp1"
 expect ">"
 
 # Menambahkan static route ke Ubuntu Server
