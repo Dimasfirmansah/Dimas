@@ -1,5 +1,8 @@
 #!/bin/sh
 
+apt install expect -y
+apt install telnet 
+
 MIKROTIK_USER="admin"
 MIKROTIK_PASS="123"
 MIKROTIK_IP="192.168.9.10"
